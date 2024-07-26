@@ -16,6 +16,35 @@ build-image-push:
 	docker build --platform linux/amd64 -t $(ECR_REPOSITORY_NAME) .
 	docker tag $(ECR_REPOSITORY_NAME):latest $(ECR_ENDPOINT)/$(ECR_REPOSITORY_NAME):latest
 	docker push $(ECR_ENDPOINT)/$(ECR_REPOSITORY_NAME):latest
+	make register-task-definition
+
+register-task-definition:
+	REVISION=$$(aws ecs register-task-definition \
+		--family $(TASK_DEFINITION_FAMILY) \
+		--network-mode awsvpc \
+		--requires-compatibilities FARGATE \
+		--cpu "256" \
+		--memory "512" \
+		--execution-role-arn $(EXISTING_ECS_TASK_ROLE_ARN) \
+		--container-definitions '[{ \
+			"name": "$(CONTAINER_NAME)", \
+			"image": "$(ECR_ENDPOINT)/$(ECR_REPOSITORY_NAME):latest", \
+			"essential": true, \
+			"portMappings": [{ \
+				"containerPort": 8080, \
+				"hostPort": 8080 \
+			}], \
+			"logConfiguration": { \
+				"logDriver": "awslogs", \
+				"options": { \
+					"awslogs-group": "/ecs/ogata-dummy-container2", \
+					"awslogs-region": "ap-northeast-1", \
+					"awslogs-stream-prefix": "ecs" \
+				} \
+			} \
+		}]' \
+		--query 'taskDefinition.taskDefinitionArn' --output text) && \
+	aws ecs update-service --cluster $(ECS_CLUSTER_NAME) --service $(ECS_SERVICE_NAME) --task-definition $$REVISION --force-new-deployment
 
 iac-deploy:
 	aws cloudformation create-stack --stack-name ogata-cloudformation-app-try \
