@@ -8,6 +8,7 @@ function App() {
       <div>
           CloudFormationで環境を構築しました
       </div>
+        <div>めっちゃいい感じに出来あがた😃</div>
         <br/>
         <br/>
         <div>
