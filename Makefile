@@ -18,6 +18,21 @@ build-image-push:
 	docker push $(ECR_ENDPOINT)/$(ECR_REPOSITORY_NAME):latest
 	make register-task-definition
 
+define retry
+    n=0
+    until [ $$n -ge $(1) ]
+    do
+        $$2 && break
+        n=$$((n+1))
+        echo "Retry $$n/$(1)..."
+        sleep 5
+    done
+    if [ $$n -ge $(1) ]; then
+        echo "Failed after $(1) attempts."
+        exit 1
+    fi
+endef
+
 register-task-definition:
 	REVISION=$$(aws ecs register-task-definition \
 		--family $(TASK_DEFINITION_FAMILY) \
@@ -48,7 +63,7 @@ register-task-definition:
 			} \
 		}]' \
 		--query 'taskDefinition.taskDefinitionArn' --output text) && \
-	aws ecs update-service --cluster $(ECS_CLUSTER_NAME) --service $(ECS_SERVICE_NAME) --task-definition $$REVISION --force-new-deployment
+	$(call retry, 3, aws ecs update-service --cluster $(ECS_CLUSTER_NAME) --service $(ECS_SERVICE_NAME) --task-definition $$REVISION --force-new-deployment)
 
 iac-deploy:
 	aws cloudformation create-stack --stack-name ogata-cloudformation-app-try \
