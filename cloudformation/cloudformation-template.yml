@@ -137,6 +137,7 @@ Resources:
   ECSService:
     Type: 'AWS::ECS::Service'
     Properties:
+      ServiceName: ogata-cloudformation-service
       Cluster: !Ref ECSCluster
       DesiredCount: 1
       LaunchType: FARGATE
