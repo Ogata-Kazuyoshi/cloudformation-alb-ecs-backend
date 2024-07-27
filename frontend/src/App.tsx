@@ -6,7 +6,8 @@ function App() {
     <>
       <div>CloudFormationで環境を構築しました</div>
       <div>ふざけるのをやめました</div>
-        <div>ECRにPushして自動でデプロイかかったら最高</div>
+      <div>ECRにPushして自動でデプロイかかったら最高</div>
+      <div>なかなかうまくいかんね！！</div>
       <br />
       <br />
       <div>コードはBuildされたものをECRへPushしてます</div>

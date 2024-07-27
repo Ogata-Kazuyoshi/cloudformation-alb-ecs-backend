@@ -93,6 +93,20 @@ Resources:
       LogGroupName: '/ecs/ogata-dummy-container2'
       RetentionInDays: 7
 
+  ECSTaskExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      RoleName: ogata-ecs-task-execution-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+
   ECSTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
@@ -102,7 +116,7 @@ Resources:
         - FARGATE
       Cpu: '256'
       Memory: '512'
-      ExecutionRoleArn: !Ref ExistingECSTaskRoleArn
+      ExecutionRoleArn: !Ref ECSTaskExecutionRole
       RuntimePlatform:
         OperatingSystemFamily: LINUX
         CpuArchitecture: X86_64

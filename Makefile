@@ -26,6 +26,10 @@ register-task-definition:
 		--cpu "256" \
 		--memory "512" \
 		--execution-role-arn $(EXISTING_ECS_TASK_ROLE_ARN) \
+		--runtime-platform '{ \
+			"operatingSystemFamily": "LINUX", \
+			"cpuArchitecture": "X86_64" \
+		}' \
 		--container-definitions '[{ \
 			"name": "$(CONTAINER_NAME)", \
 			"image": "$(ECR_ENDPOINT)/$(ECR_REPOSITORY_NAME):latest", \
@@ -49,6 +53,7 @@ register-task-definition:
 iac-deploy:
 	aws cloudformation create-stack --stack-name ogata-cloudformation-app-try \
 	--template-body file://cloudformation/cloudformation-template.yml \
+	--capabilities CAPABILITY_NAMED_IAM \
 	--parameters ParameterKey=SubnetId1,ParameterValue=$(SUBNET_ID1) \
 	             ParameterKey=SubnetId2,ParameterValue=$(SUBNET_ID2) \
 	             ParameterKey=SubnetPrivateId1,ParameterValue=$(SUBNET_PRIVATE_ID1) \
@@ -63,6 +68,7 @@ iac-deploy:
 iac-update:
 	aws cloudformation update-stack --stack-name ogata-cloudformation-app-try \
 	--template-body file://cloudformation/cloudformation-template.yml \
+	--capabilities CAPABILITY_NAMED_IAM \
 	--parameters ParameterKey=SubnetId1,ParameterValue=$(SUBNET_ID1) \
 	             ParameterKey=SubnetId2,ParameterValue=$(SUBNET_ID2) \
 	             ParameterKey=SubnetPrivateId1,ParameterValue=$(SUBNET_PRIVATE_ID1) \
