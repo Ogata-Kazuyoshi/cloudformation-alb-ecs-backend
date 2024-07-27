@@ -38,8 +38,8 @@ register-task-definition:
 		--family $(TASK_DEFINITION_FAMILY) \
 		--network-mode awsvpc \
 		--requires-compatibilities FARGATE \
-		--cpu "256" \
-		--memory "512" \
+		--cpu "512" \
+		--memory "1024" \
 		--execution-role-arn $(EXISTING_ECS_TASK_ROLE_ARN) \
 		--runtime-platform '{ \
 			"operatingSystemFamily": "LINUX", \

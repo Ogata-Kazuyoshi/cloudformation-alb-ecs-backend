@@ -43,6 +43,10 @@ Resources:
       HealthCheckProtocol: HTTP
       HealthCheckPort: '8080' # 変更: '80' -> '8080'
       HealthCheckPath: '/'
+      HealthCheckIntervalSeconds: 30 # 変更: デフォルト値 -> 30秒
+      HealthCheckTimeoutSeconds: 10 # 変更: デフォルト値 -> 10秒
+      HealthyThresholdCount: 3 # 変更: デフォルト値 -> 3回
+      UnhealthyThresholdCount: 3 # 変更: デフォルト値 -> 3回
       Matcher:
         HttpCode: '200'
     DependsOn: ALB
@@ -114,8 +118,8 @@ Resources:
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
-      Cpu: '256'
-      Memory: '512'
+      Cpu: '512' # 変更: '256' -> '512'
+      Memory: '1024' # 変更: '512' -> '1024'
       ExecutionRoleArn: !Ref ECSTaskExecutionRole
       RuntimePlatform:
         OperatingSystemFamily: LINUX
