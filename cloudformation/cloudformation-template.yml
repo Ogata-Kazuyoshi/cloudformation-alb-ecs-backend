@@ -25,7 +25,7 @@ Resources:
   ALB:
     Type: 'AWS::ElasticLoadBalancingV2::LoadBalancer'
     Properties:
-      Name: ogata-cloudformation-alb2
+      Name: ogata-cloudformation-alb
       Subnets:
         - !Ref SubnetId1
         - !Ref SubnetId2
@@ -35,7 +35,7 @@ Resources:
   ALBTargetGroup:
     Type: 'AWS::ElasticLoadBalancingV2::TargetGroup'
     Properties:
-      Name: ogata-cloudformation-alb-tg2
+      Name: ogata-cloudformation-alb-tg
       VpcId: !Ref VpcId
       Port: 8080 # 変更: 80 -> 8080
       Protocol: HTTP
@@ -73,7 +73,7 @@ Resources:
   ALBSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      Name: ogata-cloudformation-for-alb-sg2
+      Name: ogata-cloudformation-for-alb-sg
       GroupDescription: 'Allow HTTP traffic'
       VpcId: !Ref VpcId
       SecurityGroupIngress:
@@ -85,12 +85,12 @@ Resources:
   ECSCluster:
     Type: 'AWS::ECS::Cluster'
     Properties:
-      ClusterName: ogata-cloudformation-cluster2
+      ClusterName: ogata-cloudformation-cluster
 
   LogGroup:
     Type: 'AWS::Logs::LogGroup'
     Properties:
-      LogGroupName: '/ecs/ogata-dummy-container2'
+      LogGroupName: '/ecs/ogata-dummy-container'
       RetentionInDays: 7
 
   ECSTaskExecutionRole:
@@ -110,7 +110,7 @@ Resources:
   ECSTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
-      Family: 'ogata-dummy-task-family2'
+      Family: 'ogata-dummy-task-family'
       NetworkMode: awsvpc
       RequiresCompatibilities:
         - FARGATE
@@ -121,7 +121,7 @@ Resources:
         OperatingSystemFamily: LINUX
         CpuArchitecture: X86_64
       ContainerDefinitions:
-        - Name: 'ogata-dummy-container2'
+        - Name: 'ogata-dummy-container'
           Image: !Ref ECRImage
           Essential: true
           PortMappings:
@@ -149,7 +149,7 @@ Resources:
           SecurityGroups:
             - !Ref ECSSecurityGroup
       LoadBalancers:
-        - ContainerName: 'ogata-dummy-container2'
+        - ContainerName: 'ogata-dummy-container'
           ContainerPort: 8080 # 変更: 80 -> 8080
           TargetGroupArn: !Ref ALBTargetGroup
       TaskDefinition: !Ref ECSTaskDefinition
@@ -160,7 +160,7 @@ Resources:
   ECSSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
-      Name: ogata-cloudformation-for-ecs-sg2
+      Name: ogata-cloudformation-for-ecs-sg
       GroupDescription: 'Allow traffic from ALB'
       VpcId: !Ref VpcId
       SecurityGroupIngress:

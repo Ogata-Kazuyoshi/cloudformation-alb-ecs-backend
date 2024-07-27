@@ -9,6 +9,7 @@ function App() {
       <div>ECRにPushして自動でデプロイかかったら最高</div>
       <div>なかなかうまくいかんね！！</div>
         <div>IAMロール既存の使うと怒られる。自分で作った</div>
+        <div>一旦、リソースの作成、ECRPush後の自動デプロイはOK。次はCodePipeline組もう！！</div>
       <br />
       <br />
       <div>コードはBuildされたものをECRへPushしてます</div>
