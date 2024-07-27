@@ -63,7 +63,7 @@ register-task-definition:
 			} \
 		}]' \
 		--query 'taskDefinition.taskDefinitionArn' --output text) && \
-	$(call retry, 3, aws ecs update-service --cluster $(ECS_CLUSTER_NAME) --service $(ECS_SERVICE_NAME) --task-definition $$REVISION --force-new-deployment)
+	aws ecs update-service --cluster $(ECS_CLUSTER_NAME) --service $(ECS_SERVICE_NAME) --task-definition $$REVISION --force-new-deployment
 
 iac-deploy:
 	aws cloudformation create-stack --stack-name ogata-cloudformation-app-try \
