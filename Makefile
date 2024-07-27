@@ -41,7 +41,7 @@ register-task-definition:
 			"logConfiguration": { \
 				"logDriver": "awslogs", \
 				"options": { \
-					"awslogs-group": "/ecs/ogata-dummy-container2", \
+					"awslogs-group": "/ecs/$(CONTAINER_NAME)", \
 					"awslogs-region": "ap-northeast-1", \
 					"awslogs-stream-prefix": "ecs" \
 				} \
