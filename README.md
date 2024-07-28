@@ -7,8 +7,8 @@
 - [今回のシステム概要図](#今回のシステム概要図)
 - [codecommit](#codecommit)
 - [githubのPushをトリガーにOIDC認証する](#githubのPushをトリガーにOIDC認証する)
-- [使用方法](#使用方法)
-
+- [使用方法(cloudformation+ecrに直接push)](#使用方法(cloudformation+ecrに直接push))
+- [参考](#参考)
 </details>
 
 # 今回のシステム概要図
@@ -67,7 +67,20 @@ git config credential.UseHttpPath true
 
 </details>
 
-# 使用方法
+# githubのPushをトリガーにOIDC認証する
+
+<details>
+<summary> 1. IAMでIDプロバイダーを登録</summary>
+
+- 下記コマンドでcloudFormationを起動して環境を立ち上げる
+
+```zh
+make iac-deploy
+```
+</details>
+
+
+# 使用方法(cloudformation+ecrに直接push)
 
 <details>
 <summary> 1. 環境変数の設定</summary>
@@ -136,6 +149,7 @@ make build-image-push
 </details>
 
 
+# 参考
 
 - 下記のwithがめっちゃ大事。
 ```zh
@@ -146,4 +160,5 @@ make build-image-push
           fetch-depth: 0
 ```
 
-[参考記事githubOIDC](https://zenn.dev/trkdkjm/articles/f8fcc38c3cf690)
+[githubOIDC](https://zenn.dev/kou_pg_0131/articles/gh-actions-oidc-aws)
+[githubOIDCエラー](https://zenn.dev/trkdkjm/articles/f8fcc38c3cf690)
