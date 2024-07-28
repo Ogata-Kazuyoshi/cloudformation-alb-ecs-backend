@@ -16,10 +16,15 @@ jobs:
       - name: Git clone the repository
         uses: actions/checkout@v4
       - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v4 # バージョンをv4に更新
         with:
           role-to-assume: arn:aws:iam::398649269234:role/ogata-codecommit-oidc
           aws-region: ap-northeast-1
+
+      - name: Configure git to use AWS CodeCommit credentials
+        run: |
+          git config --global credential.helper '!aws codecommit credential-helper $@'
+          git config --global credential.UseHttpPath true
 
       - name: Sync to CodeCommit
         run: |
