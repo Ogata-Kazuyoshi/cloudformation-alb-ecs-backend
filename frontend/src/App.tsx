@@ -14,6 +14,7 @@ function App() {
         <div>CPU,memoryを増やしたら安定するって聞いた</div>
         <div>なんか、githubから直接ECRにPushかけて、それを元にECSにデプロイするっぽい</div>
         <div>あんまりGithubActionsからの動きうまくいってなさそう</div>
+        <div>task定義をgithub-ci.ymlに書くのは後でやめたいね</div>
       <br />
       <br />
       <div>コードはBuildされたものをECRへPushしてます</div>

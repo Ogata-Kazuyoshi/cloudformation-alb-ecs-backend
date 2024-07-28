@@ -87,10 +87,18 @@ jobs:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
+      - name: Register new task definition
+        id: task-def
+        run: |
+          TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition ogata-cloudformation-task)
+          NEW_TASK_DEF=$(echo $TASK_DEFINITION | jq --arg IMAGE_URI "${{ steps.login-ecr.outputs.registry }}/ogata-cloudformation-template:latest" '.taskDefinition | .containerDefinitions[0].image=$IMAGE_URI | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+          echo $NEW_TASK_DEF > new-task-def.json
+          aws ecs register-task-definition --cli-input-json file://new-task-def.json
+
       - name: Deploy to ECS
         env:
           CLUSTER_NAME: ogata-cloudformation-cluster # ここをあなたのECSクラスター名に変更
           SERVICE_NAME: ogata-cloudformation-service # ここをあなたのECSサービス名に変更
-          IMAGE_URI: ${{ steps.login-ecr.outputs.registry }}/ogata-cloudformation-template:latest
         run: |
-          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment --region ${{ vars.AWS_REGION }} --desired-count 1
+          NEW_TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json | jq -r '.taskDefinition.taskDefinitionArn')
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $NEW_TASK_DEF_ARN --force-new-deployment --region ${{ vars.AWS_REGION }} --desired-count 1
