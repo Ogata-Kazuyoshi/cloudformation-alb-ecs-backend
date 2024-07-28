@@ -1,4 +1,43 @@
-name: Sync to CodeCommit
+# name: Sync to CodeCommit
+
+# on:
+#   push:
+#     branches:
+#       - main # 監視するブランチを指定
+
+# permissions:
+#   id-token: write
+#   contents: read
+
+# jobs:
+#   sync:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Git clone the repository # リポジトリの内容をクローン。後続でアクセスできるようになる。 fetch-depth:0は完全なクローンを意味する
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+
+#       - name: configure aws credentials # 認証認可のための部分。role-to-assumeで認証後に引き受けるIAMロールが指定される
+#         uses: aws-actions/configure-aws-credentials@v4
+#         with:
+#           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+#           aws-region: ${{ vars.AWS_REGION }}
+
+#       - name: Configure git to use AWS CodeCommit credentials
+#         run: |
+#           git config --global credential.helper '!aws codecommit credential-helper $@'
+#           git config --global credential.UseHttpPath true
+
+#       - name: Add CodeCommit remote
+#         run: |
+#           git remote add codecommit https://git-codecommit.${{ vars.AWS_REGION }}.amazonaws.com/v1/repos/${{ vars.AWS_CODECOMMIT }}
+
+#       - name: push to CodeCommit
+#         run: |
+#           git push codecommit main
+
+name: Build and Deploy to ECS
 
 on:
   push:
@@ -10,29 +49,41 @@ permissions:
   contents: read
 
 jobs:
-  sync:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Git clone the repository # リポジトリの内容をクローン。後続でアクセスできるようになる。 fetch-depth:0は完全なクローンを意味する
+      - name: Git clone the repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: configure aws credentials # 認証認可のための部分。role-to-assumeで認証後に引き受けるIAMロールが指定される
+      - name: Log in to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Build, tag, and push Docker image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ogata-cloudformation-template # ここをあなたのECRリポジトリ名に変更
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
-      - name: Configure git to use AWS CodeCommit credentials
+      - name: Deploy to ECS
+        env:
+          CLUSTER_NAME: ogata-cloudformation-cluster # ここをあなたのECSクラスター名に変更
+          SERVICE_NAME: ogata-cloudformation-service # ここをあなたのECSサービス名に変更
+          IMAGE_URI: ${{ steps.build.outputs.ecr_registry }}/${{ steps.build.outputs.ecr_repository }}:${{ github.sha }}
         run: |
-          git config --global credential.helper '!aws codecommit credential-helper $@'
-          git config --global credential.UseHttpPath true
-
-      - name: Add CodeCommit remote
-        run: |
-          git remote add codecommit https://git-codecommit.${{ vars.AWS_REGION }}.amazonaws.com/v1/repos/${{ vars.AWS_CODECOMMIT }}
-
-      - name: push to CodeCommit
-        run: |
-          git push codecommit main
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment --region ${{ vars.AWS_REGION }}
