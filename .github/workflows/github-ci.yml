@@ -24,9 +24,6 @@ jobs:
           role-to-assume: arn:aws:iam::398649269234:role/ogata-codecommit-oidc
           aws-region: ap-northeast-1
 
-      - name: Verify AWS credentials
-        run: aws sts get-caller-identity # 追加: IAMロールの確認
-
       - name: Configure git to use AWS CodeCommit credentials
         run: |
           git config --global credential.helper '!aws codecommit credential-helper $@'
@@ -34,21 +31,19 @@ jobs:
 
       - name: Add CodeCommit remote
         run: |
-          git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-codecommit-try-study
+          git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-test-codecommit-from-github
 
-      - name: Set up git user
+#      - name: Set up git user
+#        run: |
+#          git config --global user.name "github-actions"
+#          git config --global user.email "github-actions@github.com"
+#
+#      - name: Check git remote
+#        run: git remote -v
+#
+#      - name: Check git log
+#        run: git log -1
+#
+      - name: push to CodeCommit
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-
-      - name: Check git remote
-        run: git remote -v
-
-      - name: Check git log
-        run: git log -1
-
-      - name: Initial push to CodeCommit
-        run: |
-          # リモートリポジトリが空であることを前提にして、初回のプッシュを行う
-          git fetch codecommit || true
           git push codecommit main --force
