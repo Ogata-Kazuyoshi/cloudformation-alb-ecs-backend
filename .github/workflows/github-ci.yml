@@ -17,7 +17,7 @@ jobs:
 #      - name: Checkout repository
 #        uses: actions/checkout@v2
       - name: Configure AWS credentials using OIDC
-        uses: aws-actions/configure-aws-credentials@v2
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: arn:aws:iam::398649269234:role/ogata-codecommit-oidc
           aws-region: ap-northeast-1
