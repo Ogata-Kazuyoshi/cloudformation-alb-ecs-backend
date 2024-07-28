@@ -30,6 +30,11 @@ jobs:
         run: |
           git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-codecommit-try-study
 
+      - name: Fetch and reset remote repository
+        run: |
+          git fetch codecommit || true
+          git reset --hard codecommit/main || true
+
       - name: Force push to CodeCommit
         run: |
           git push codecommit main --force
