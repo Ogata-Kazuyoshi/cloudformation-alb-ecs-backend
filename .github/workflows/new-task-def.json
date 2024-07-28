@@ -1,0 +1,20 @@
+{
+  "family": "ogata-dummy-task-family",
+  "containerDefinitions": [
+    {
+      "name": "ogata-container",
+      "image": "${IMAGE_URI}",
+      "cpu": 1024,
+      "memory": 2048,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "${LOG_GROUP}",
+          "awslogs-region": "ap-northeast-1",
+          "awslogs-stream-prefix": "${LOG_STREAM_PREFIX}"
+        }
+      }
+    }
+  ],
+  "executionRoleArn": "${EXECUTION_ROLE_ARN}"
+}
