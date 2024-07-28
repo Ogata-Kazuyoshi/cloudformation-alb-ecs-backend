@@ -6,6 +6,7 @@
 
 - [今回のシステム概要図](#今回のシステム概要図)
 - [codecommit](#codecommit)
+- [githubのPushをトリガーにOIDC認証する](#githubのPushをトリガーにOIDC認証する)
 - [使用方法](#使用方法)
 
 </details>

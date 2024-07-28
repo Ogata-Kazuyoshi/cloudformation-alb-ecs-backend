@@ -1,34 +1,29 @@
-name: Build and Test
+name: Sync to CodeCommit
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main # 監視するブランチを指定
 
 jobs:
-  build-and-test:
+  sync:
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v2
+      - name: Configure AWS credentials using OIDC
+        uses: aws-actions/configure-aws-credentials@v1
         with:
-          java-version: '17'
-          distribution: 'adopt'
+          role-to-assume: arn:aws:iam::398649269234:role/ogata-codecommit-oidc
+          aws-region: ap-northeast-1
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '18'
-
-      - name: Install npm dependencies
+      - name: Sync to CodeCommit
         run: |
-          cd frontend
-          npm install
-
-      - name: backend unit test
-        run: make backend-test
-
-      - name: frontend unit test
-        run: make frontend-test
+          git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-try-codepipeline-study
+          git push codecommit main
