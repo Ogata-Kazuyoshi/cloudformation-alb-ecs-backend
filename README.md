@@ -42,6 +42,7 @@
 <details>
 <summary> 1. codecommitに直接Pushしたい場合の設定</summary>
 
+- 下記の設定だけでもダメかも。２回目はPushできなかった。
 - 下記コマンドでAWSの設定をする
 
 ```zh
