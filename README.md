@@ -37,6 +37,14 @@
 
 </details>
 
+
+- githubにPushできなくなったら下記を打つ
+- your_tokenの部分はsettingからとってくる
+
+```zh
+git remote set-url origin https://YOUR_TOKEN@github.com/your_username/your_repository.git 
+```
+
 # codecommit
 
 <details>
