@@ -28,5 +28,5 @@ jobs:
 
       - name: Sync to CodeCommit
         run: |
-          git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-try-codepipeline-study
+          git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-codecommit-try-study
           git push codecommit main
