@@ -30,6 +30,6 @@ jobs:
         run: |
           git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-codecommit-try-study
 
-      - name: Push to CodeCommit
+      - name: Force push to CodeCommit
         run: |
-          git push codecommit main
+          git push codecommit main --force
