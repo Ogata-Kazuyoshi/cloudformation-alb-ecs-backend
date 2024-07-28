@@ -26,8 +26,12 @@ jobs:
           git config --global credential.helper '!aws codecommit credential-helper $@'
           git config --global credential.UseHttpPath true
 
-      - name: Sync to CodeCommit
+      - name: Reset remote repository
         run: |
           git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-codecommit-try-study
-          git pull codecommit main # リモートリポジトリから最新の変更をプル
-          git push codecommit main
+          git fetch codecommit
+          git reset --hard codecommit/main
+
+      - name: Sync to CodeCommit
+        run: |
+          git push codecommit main --force
