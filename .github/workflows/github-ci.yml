@@ -29,4 +29,5 @@ jobs:
       - name: Sync to CodeCommit
         run: |
           git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-codecommit-try-study
+          git pull codecommit main # リモートリポジトリから最新の変更をプル
           git push codecommit main
