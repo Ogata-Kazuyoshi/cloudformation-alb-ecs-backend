@@ -5,9 +5,10 @@
 
 
 - [今回のシステム概要図](#今回のシステム概要図)
-- [codecommit](#codecommit)
+- [直接codecommit](#直接codecommit)
 - [githubのPushをトリガーにOIDC認証する](#githubのPushをトリガーにOIDC認証する)
 - [使用方法(cloudformation+ecrに直接push)](#使用方法(cloudformation+ecrに直接push))
+- [備考](#備考)
 - [参考](#参考)
 </details>
 
@@ -39,14 +40,7 @@
 </details>
 
 
-- githubにPushできなくなったら下記を打つ
-- your_tokenの部分はsettingからとってくる
-
-```zh
-git remote set-url origin https://YOUR_TOKEN@github.com/your_username/your_repository.git 
-```
-
-# codecommit
+# 直接codecommit
 
 <details>
 <summary> 1. codecommitに直接Pushしたい場合の設定</summary>
@@ -129,6 +123,61 @@ git config credential.UseHttpPath true
 
 </details>
 
+<details>
+<summary> 3. github-ci.ymlを記入</summary>
+
+- 下記のコードを記入
+
+```application.yml
+name: Sync to CodeCommit
+
+on:
+  push:
+    branches:
+      - main # 監視するブランチを指定
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone the repository # リポジトリの内容をクローン。後続でアクセスできるようになる。 fetch-depth:0は完全なクローンを意味する
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: configure aws credentials # 認証認可のための部分。role-to-assumeで認証後に引き受けるIAMロールが指定される
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Configure git to use AWS CodeCommit credentials
+        run: |
+          git config --global credential.helper '!aws codecommit credential-helper $@'
+          git config --global credential.UseHttpPath true
+
+      - name: Add CodeCommit remote
+        run: |
+          git remote add codecommit https://git-codecommit.${{ vars.AWS_REGION }}.amazonaws.com/v1/repos/${{ vars.AWS_CODECOMMIT }}
+
+      - name: push to CodeCommit
+        run: |
+          git push codecommit main
+```
+
+- 環境変数をgithubの該当するリポジトリーから設定。
+- 下記のようなActionsエラーの時は、checkoutでdepth 0にして完全なコピーをすること
+
+![](./assets/images/aws-githubOIDC4.png)
+<br>
+![](./assets/images/aws-githubOIDC5.png)
+
+</details>
+
 
 # 使用方法(cloudformation+ecrに直接push)
 
@@ -198,8 +247,25 @@ make build-image-push
 
 </details>
 
+# 備考
 
-# 参考
+<details>
+<summary> 1. githubにPushできなくなった場合</summary>
+
+- 認証トークンがおかしなことなってるのかな？とりあえず下記でなおった
+
+
+- githubにPushできなくなったら下記を打つ
+- your_tokenの部分はsettingからとってくる
+
+```zh
+git remote set-url origin https://YOUR_TOKEN@github.com/your_username/your_repository.git 
+```
+</details>
+
+<details>
+<summary> 2. なかなかcodecommitへPushできなかった</summary>
+
 
 - 下記のwithがめっちゃ大事。
 ```zh
@@ -209,6 +275,9 @@ make build-image-push
         with:
           fetch-depth: 0
 ```
+</details>
+
+# 参考
 
 [githubOIDC](https://zenn.dev/kou_pg_0131/articles/gh-actions-oidc-aws)
 <br/>
