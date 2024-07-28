@@ -17,6 +17,8 @@ function App() {
         <div>task定義をgithub-ci.ymlに書くのは後でやめたいね</div>
         <div>やっぱりデプロイの自動化は難しいね。早く次のステップに行きたい</div>
         <div>CPUメモリのサイズの問題ではなさそう。なぜデプロイが失敗するのか。。。</div>
+        <div>terminalから直接。。。</div>
+        <div>タスクロールが抜けてたかも。。。。</div>
       <br />
       <br />
       <div>コードはBuildされたものをECRへPushしてます</div>

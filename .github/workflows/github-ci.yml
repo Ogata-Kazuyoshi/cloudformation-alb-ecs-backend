@@ -48,6 +48,10 @@ permissions:
   id-token: write
   contents: read
 
+env:
+  LOG_GROUP: /ecs/ogata-dummy-container # ここをあなたのロググループ名に変更
+  EXECUTION_ROLE_ARN: arn:aws:iam::398649269234:role/ogata-ecs-task-execution-role
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -66,7 +70,6 @@ jobs:
       - name: Log in to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-
 
       - name: Build, tag, and push Docker image
         env:
@@ -94,7 +97,7 @@ jobs:
           echo "Describing current task definition..."
           TASK_DEFINITION=$(aws ecs describe-task-definition --task-definition ogata-dummy-task-family) || { echo "Failed to describe task definition"; exit 1; }
           echo "Current task definition described successfully."
-          NEW_TASK_DEF=$(echo $TASK_DEFINITION | jq --arg IMAGE_URI "${{ steps.login-ecr.outputs.registry }}/ogata-cloudformation-template:latest" --arg LOG_GROUP "/ecs/ogata-dummy-container" --arg LOG_STREAM_PREFIX "ecs" '.taskDefinition | .containerDefinitions[0].image=$IMAGE_URI | .containerDefinitions[0].logConfiguration={logDriver: "awslogs", options: { "awslogs-group": $LOG_GROUP, "awslogs-region": "ap-northeast-1", "awslogs-stream-prefix": $LOG_STREAM_PREFIX }} | .cpu="1024" | .memory="2048" | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
+          NEW_TASK_DEF=$(echo $TASK_DEFINITION | jq --arg IMAGE_URI "${{ steps.login-ecr.outputs.registry }}/ogata-cloudformation-template:latest" --arg LOG_GROUP "${{ env.LOG_GROUP }}" --arg LOG_STREAM_PREFIX "ecs" --arg EXECUTION_ROLE_ARN "${{ env.EXECUTION_ROLE_ARN }}" '.taskDefinition | .containerDefinitions[0].image=$IMAGE_URI | .containerDefinitions[0].logConfiguration={logDriver: "awslogs", options: { "awslogs-group": $LOG_GROUP, "awslogs-region": "ap-northeast-1", "awslogs-stream-prefix": $LOG_STREAM_PREFIX }} | .cpu="1024" | .memory="2048" | .executionRoleArn=$EXECUTION_ROLE_ARN | del(.taskDefinitionArn, .revision, .status, .requiresAttributes, .compatibilities, .registeredAt, .registeredBy)')
           echo $NEW_TASK_DEF > new-task-def.json
           echo "Registering new task definition..."
           aws ecs register-task-definition --cli-input-json file://new-task-def.json || { echo "Failed to register new task definition"; exit 1; }
