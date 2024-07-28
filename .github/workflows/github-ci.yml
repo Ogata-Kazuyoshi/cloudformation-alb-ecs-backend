@@ -31,19 +31,8 @@ jobs:
 
       - name: Add CodeCommit remote
         run: |
-          git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-test-codecommit-from-github
+          git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-test-codecommit-try2
 
-#      - name: Set up git user
-#        run: |
-#          git config --global user.name "github-actions"
-#          git config --global user.email "github-actions@github.com"
-#
-#      - name: Check git remote
-#        run: git remote -v
-#
-#      - name: Check git log
-#        run: git log -1
-#
       - name: push to CodeCommit
         run: |
-          git push codecommit main --force
+          git push codecommit main
