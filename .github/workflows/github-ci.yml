@@ -94,6 +94,7 @@ jobs:
         id: task-def
         run: |
           set -e
+          ls -la  # デバッグ用に追加
           echo "Updating task definition with new image URI..."
           NEW_TASK_DEF=$(cat new-task-def.json | jq --arg IMAGE_URI "${{ steps.login-ecr.outputs.registry }}/ogata-cloudformation-template:latest" --arg LOG_GROUP "/ecs/ogata-dummy-container" --arg LOG_STREAM_PREFIX "ecs" --arg EXECUTION_ROLE_ARN "${{ env.EXECUTION_ROLE_ARN }}" '.containerDefinitions[0].image=$IMAGE_URI | .containerDefinitions[0].logConfiguration.options["awslogs-group"]=$LOG_GROUP | .executionRoleArn=$EXECUTION_ROLE_ARN')
           echo $NEW_TASK_DEF > new-task-def.json
