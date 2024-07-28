@@ -48,4 +48,5 @@ jobs:
       - name: Initial push to CodeCommit
         run: |
           # リモートリポジトリが空であることを前提にして、初回のプッシュを行う
-          git push codecommit main --force || git push codecommit main --set-upstream
+          git fetch codecommit || true
+          git push codecommit main --force
