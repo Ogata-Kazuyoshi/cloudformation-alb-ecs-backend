@@ -21,6 +21,9 @@ jobs:
           role-to-assume: arn:aws:iam::398649269234:role/ogata-codecommit-oidc
           aws-region: ap-northeast-1
 
+      - name: Verify AWS credentials
+        run: aws sts get-caller-identity # 追加: IAMロールの確認
+
       - name: Configure git to use AWS CodeCommit credentials
         run: |
           git config --global credential.helper '!aws codecommit credential-helper $@'
