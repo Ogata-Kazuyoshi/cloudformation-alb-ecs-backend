@@ -72,7 +72,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ogata-cloudformation-template # ここをあなたのECRリポジトリ名に変更
-          IMAGE_TAG: ${{ github.sha }}
+          IMAGE_TAG: latest
         run: |
           docker build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -91,6 +91,6 @@ jobs:
         env:
           CLUSTER_NAME: ogata-cloudformation-cluster # ここをあなたのECSクラスター名に変更
           SERVICE_NAME: ogata-cloudformation-service # ここをあなたのECSサービス名に変更
-          IMAGE_URI: ${{ steps.build.outputs.ecr_registry }}/${{ steps.build.outputs.ecr_repository }}:${{ github.sha }}
+          IMAGE_URI: ${{ steps.login-ecr.outputs.registry }}/ogata-cloudformation-template:latest
         run: |
-          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment --region ${{ vars.AWS_REGION }}
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --force-new-deployment --region ${{ vars.AWS_REGION }} --desired-count 1

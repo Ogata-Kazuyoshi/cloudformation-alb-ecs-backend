@@ -13,6 +13,7 @@ function App() {
         <div>deployが成功したり、失敗したりで安定しないのはなんで？</div>
         <div>CPU,memoryを増やしたら安定するって聞いた</div>
         <div>なんか、githubから直接ECRにPushかけて、それを元にECSにデプロイするっぽい</div>
+        <div>あんまりGithubActionsからの動きうまくいってなさそう</div>
       <br />
       <br />
       <div>コードはBuildされたものをECRへPushしてます</div>
