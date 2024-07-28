@@ -50,7 +50,7 @@ git remote set-url origin https://YOUR_TOKEN@github.com/your_username/your_repos
 <details>
 <summary> 1. codecommitに直接Pushしたい場合の設定</summary>
 
-- 下記の設定だけでもダメかも。２回目はPushできなかった。
+- 下記の設定だけでもダメかも。２回目はPushできなかった。初回はPushできるけど。。。
 - 下記コマンドでAWSの設定をする
 
 ```zh
