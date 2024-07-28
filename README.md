@@ -83,9 +83,49 @@ git config credential.UseHttpPath true
 <summary> 2. IAMロールを登録する</summary>
 
 - IAMロールから、認証認可後のIAMロールを作成
+- 下記jsonをIAMロールの信頼ポリシーに定義。
 
-![](./assets/images/aws-githubOIDC1.png)
-![](./assets/images/aws-githubOIDC2.png)
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "",
+            "Effect": "Allow",
+            "Principal": {
+                "Federated": "arn:aws:iam::<AWS ID>:oidc-provider/token.actions.githubusercontent.com"
+            },
+            "Action": "sts:AssumeRoleWithWebIdentity",
+            "Condition": {
+                "StringEquals": {
+                    "token.actions.githubusercontent.com:sub": "repo:<user-name(github)>/<repository-name(github)>:ref:refs/heads/main",
+                    "token.actions.githubusercontent.com:aud": "sts.amazonaws.com"
+                }
+            }
+        }
+    ]
+}
+```
+
+- 上記で作成したIAMロールに下記のIAMポリシーをアタッチする
+
+```json
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"codecommit:GitPull",
+				"codecommit:GitPush"
+			],
+			"Resource": "arn:aws:codecommit:ap-northeast-1:<AWS ID>:<codecommit-repository-name>"
+		}
+	]
+}
+```
+
+![](./assets/images/aws-githubOIDC3.png)
 
 </details>
 

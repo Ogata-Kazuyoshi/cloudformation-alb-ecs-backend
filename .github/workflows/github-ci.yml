@@ -13,25 +13,25 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Git clone the repository
+      - name: Git clone the repository # リポジトリの内容をクローン。後続でアクセスできるようになる。 fetch-depth:0は完全なクローンを意味する
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@v4 # バージョンをv4に更新
+      - name: configure aws credentials # 認証認可のための部分。role-to-assumeで認証後に引き受けるIAMロールが指定される
+        uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::398649269234:role/ogata-codecommit-oidc
           aws-region: ap-northeast-1
 
-      - name: Configure git to use AWS CodeCommit credentials
-        run: |
-          git config --global credential.helper '!aws codecommit credential-helper $@'
-          git config --global credential.UseHttpPath true
+#      - name: Configure git to use AWS CodeCommit credentials
+#        run: |
+#          git config --global credential.helper '!aws codecommit credential-helper $@'
+#          git config --global credential.UseHttpPath true
 
       - name: Add CodeCommit remote
         run: |
-          git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-test-codecommit-try2
+          git remote add codecommit https://git-codecommit.ap-northeast-1.amazonaws.com/v1/repos/ogata-test-repository
 
       - name: push to CodeCommit
         run: |
