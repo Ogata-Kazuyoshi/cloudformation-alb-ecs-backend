@@ -24,10 +24,10 @@ jobs:
           role-to-assume: arn:aws:iam::398649269234:role/ogata-codecommit-oidc
           aws-region: ap-northeast-1
 
-#      - name: Configure git to use AWS CodeCommit credentials
-#        run: |
-#          git config --global credential.helper '!aws codecommit credential-helper $@'
-#          git config --global credential.UseHttpPath true
+      - name: Configure git to use AWS CodeCommit credentials
+        run: |
+          git config --global credential.helper '!aws codecommit credential-helper $@'
+          git config --global credential.UseHttpPath true
 
       - name: Add CodeCommit remote
         run: |
