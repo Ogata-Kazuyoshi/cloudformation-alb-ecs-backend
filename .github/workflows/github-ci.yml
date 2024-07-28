@@ -57,11 +57,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
       - name: Log in to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-        with:
-          aws-region: ${{ vars.AWS_REGION }} # ここでリージョンを指定
 
 
       - name: Build, tag, and push Docker image
