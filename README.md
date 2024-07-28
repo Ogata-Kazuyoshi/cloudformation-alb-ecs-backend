@@ -72,11 +72,21 @@ git config credential.UseHttpPath true
 <details>
 <summary> 1. IAMでIDプロバイダーを登録</summary>
 
-- 下記コマンドでcloudFormationを起動して環境を立ち上げる
+- IAMからプロバイダを登録
 
-```zh
-make iac-deploy
-```
+![](./assets/images/aws-githubOIDC1.png)
+![](./assets/images/aws-githubOIDC2.png)
+
+</details>
+
+<details>
+<summary> 2. IAMロールを登録する</summary>
+
+- IAMロールから、認証認可後のIAMロールを作成
+
+![](./assets/images/aws-githubOIDC1.png)
+![](./assets/images/aws-githubOIDC2.png)
+
 </details>
 
 
@@ -161,4 +171,5 @@ make build-image-push
 ```
 
 [githubOIDC](https://zenn.dev/kou_pg_0131/articles/gh-actions-oidc-aws)
+<br/>
 [githubOIDCエラー](https://zenn.dev/trkdkjm/articles/f8fcc38c3cf690)
