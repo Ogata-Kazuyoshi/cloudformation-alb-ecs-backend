@@ -5,19 +5,18 @@ on:
     branches:
       - main # 監視するブランチを指定
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   sync:
     runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write
-      contents: read
-
     steps:
-      #      - name: Checkout repository
-      #        uses: actions/checkout@v2
-      #      - name: Configure AWS credentials using OIDC
-      - uses: aws-actions/configure-aws-credentials@v3 # バージョンをv3に更新
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: arn:aws:iam::398649269234:role/ogata-codecommit-oidc
           aws-region: ap-northeast-1
