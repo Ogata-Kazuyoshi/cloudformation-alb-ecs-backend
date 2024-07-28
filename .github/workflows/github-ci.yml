@@ -39,6 +39,12 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
 
+      - name: Check git remote
+        run: git remote -v
+
+      - name: Check git log
+        run: git log -1
+
       - name: Initial push to CodeCommit
         run: |
           git push codecommit main --force
