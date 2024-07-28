@@ -135,3 +135,15 @@ make build-image-push
 
 </details>
 
+
+
+- 下記のwithがめっちゃ大事。
+```zh
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+```
+
+[参考記事githubOIDC](https://zenn.dev/trkdkjm/articles/f8fcc38c3cf690)
