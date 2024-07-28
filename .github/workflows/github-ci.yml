@@ -21,8 +21,8 @@ jobs:
       - name: configure aws credentials # 認証認可のための部分。role-to-assumeで認証後に引き受けるIAMロールが指定される
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE_ARN }}
-          aws-region: ${{ env.AWS_REGION }}
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
 
       - name: Configure git to use AWS CodeCommit credentials
         run: |
@@ -31,7 +31,7 @@ jobs:
 
       - name: Add CodeCommit remote
         run: |
-          git remote add codecommit https://git-codecommit.${{ env.AWS_REGION }}.amazonaws.com/v1/repos/${{ env.AWS_CODECOMMIT }}
+          git remote add codecommit https://git-codecommit.${{ vars.AWS_REGION }}.amazonaws.com/v1/repos/${{ vars.AWS_CODECOMMIT }}
 
       - name: push to CodeCommit
         run: |
