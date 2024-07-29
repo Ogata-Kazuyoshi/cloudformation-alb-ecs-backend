@@ -3,9 +3,7 @@
   "containerDefinitions": [
     {
       "name": "ogata-dummy-container",
-      "image": "398649269234.dkr.ecr.ap-northeast-1.amazonaws.com/ogata-cloudformation-template:latest",
-      "cpu": 512,
-      "memory": 1024,
+      "image": "temporary",
       "portMappings": [
         {
           "containerPort": 8080,

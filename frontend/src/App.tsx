@@ -26,6 +26,7 @@ function App() {
       <div>terminalから直接。。。</div>
       <div>タスクロールが抜けてたかも。。。。</div>
       <div>なぜかimage_uriが取れてなかっただけ</div>
+      <div>色々環境変数化してみた</div>
       <br />
       <br />
       <div>コードはBuildされたものをECRへPushしてます</div>
