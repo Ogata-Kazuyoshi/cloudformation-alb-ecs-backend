@@ -18,5 +18,7 @@
   ],
   "executionRoleArn": "${EXECUTION_ROLE_ARN}",
   "requiresCompatibilities": ["FARGATE"],
-  "networkMode": "awsvpc"
+  "networkMode": "awsvpc",
+  "cpu": "1024",
+  "memory": "2048"
 }
