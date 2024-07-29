@@ -4,8 +4,8 @@
     {
       "name": "ogata-dummy-container",
       "image": "398649269234.dkr.ecr.ap-northeast-1.amazonaws.com/ogata-cloudformation-template:latest",
-      "cpu": 1024,
-      "memory": 2048,
+      "cpu": 512,
+      "memory": 1024,
       "portMappings": [
         {
           "containerPort": 8080,
@@ -26,6 +26,6 @@
   "executionRoleArn": "arn:aws:iam::398649269234:role/ogata-ecs-task-execution-role",
   "requiresCompatibilities": ["FARGATE"],
   "networkMode": "awsvpc",
-  "cpu": "1024",
-  "memory": "2048"
+  "cpu": "512",
+  "memory": "1024"
 }
