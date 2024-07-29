@@ -16,5 +16,7 @@
       }
     }
   ],
-  "executionRoleArn": "${EXECUTION_ROLE_ARN}"
+  "executionRoleArn": "${EXECUTION_ROLE_ARN}",
+  "requiresCompatibilities": ["FARGATE"],
+  "networkMode": "awsvpc"
 }
