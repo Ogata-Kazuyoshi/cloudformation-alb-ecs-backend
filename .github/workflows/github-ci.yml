@@ -113,9 +113,9 @@ jobs:
           set -e
           ls -la .github/workflows/  # デバッグ用に追加
           echo "Registering new task definition..."
-          aws ecs register-task-definition --cli-input-json file://new-task-def.json || { echo "Failed to register new task definition"; exit 1; }
+          aws ecs register-task-definition --cli-input-json file://.github/workflows/new-task-def.json || { echo "Failed to register new task definition"; exit 1; }
           echo "New task definition registered successfully."
-          cat new-task-def.json  # デバッグ用に追加
+          cat .github/workflows/new-task-def.json  # デバッグ用に追加
 
       - name: Deploy to ECS
         env:
