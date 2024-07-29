@@ -94,7 +94,7 @@ jobs:
           role-to-assume: ${{ vars.AWS_ROLE_ARN }}
           aws-region: ${{ vars.AWS_REGION }}
 
-       - name: Register new task definition
+      - name: Register new task definition
         id: task-def
         run: |
           set -e
