@@ -42,7 +42,7 @@ name: Build and Deploy to ECS
 on:
   push:
     branches:
-      - main 
+      - main
 
 permissions:
   id-token: write
@@ -102,12 +102,12 @@ jobs:
           echo $NEW_TASK_DEF > new-task-def.json
           echo "Registering new task definition..."
           NEW_TASK_DEF_ARN=$(aws ecs register-task-definition --cli-input-json file://new-task-def.json | jq -r '.taskDefinition.taskDefinitionArn')
+          echo "::set-output name=NEW_TASK_DEF_ARN::$NEW_TASK_DEF_ARN"
           echo "New task definition registered successfully."
           cat new-task-def.json  # デバッグ用に追加
       - name: Deploy to ECS
         env:
           CLUSTER_NAME: ogata-cloudformation-cluster # ここをあなたのECSクラスター名に変更
           SERVICE_NAME: ogata-cloudformation-service # ここをあなたのECSサービス名に変更
-          NEW_TASK_DEF_ARN: ${{ steps.task-def.outputs.NEW_TASK_DEF_ARN }}
         run: |
-          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition $NEW_TASK_DEF_ARN --force-new-deployment --region ${{ vars.AWS_REGION }} --desired-count 1
+          aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition ${{ steps.task-def.outputs.NEW_TASK_DEF_ARN }} --force-new-deployment --region ${{ vars.AWS_REGION }} --desired-count 1
