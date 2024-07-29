@@ -53,33 +53,6 @@ env:
   EXECUTION_ROLE_ARN: arn:aws:iam::398649269234:role/ogata-ecs-task-execution-role
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Git clone the repository
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
-
-      - name: Log in to Amazon ECR
-        id: login-ecr
-        uses: aws-actions/amazon-ecr-login@v1
-
-      - name: Build, tag, and push Docker image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ogata-cloudformation-template # ここをあなたのECRリポジトリ名に変更
-          IMAGE_TAG: latest
-        run: |
-          docker build --platform linux/amd64 -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -f Dockerfile .
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -106,6 +79,7 @@ jobs:
           echo "Registering new task definition..."
           aws ecs register-task-definition --cli-input-json file://new-task-def.json || { echo "Failed to register new task definition"; exit 1; }
           echo "New task definition registered successfully."
+          cat new-task-def.json  # デバッグ用に追加
 
       - name: Deploy to ECS
         env:

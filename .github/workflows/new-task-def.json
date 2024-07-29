@@ -4,8 +4,8 @@
     {
       "name": "ogata-dummy-container",
       "image": "${IMAGE_URI}",
-      "cpu": 1024,
-      "memory": 2048,
+      "cpu": 512,
+      "memory": 1024,
       "portMappings": [
         {
           "containerPort": 8080,
@@ -18,7 +18,7 @@
         "options": {
           "awslogs-group": "${LOG_GROUP}",
           "awslogs-region": "ap-northeast-1",
-          "awslogs-stream-prefix": "${LOG_STREAM_PREFIX}"
+          "awslogs-stream-prefix": "ecs"
         }
       }
     }
@@ -26,6 +26,6 @@
   "executionRoleArn": "${EXECUTION_ROLE_ARN}",
   "requiresCompatibilities": ["FARGATE"],
   "networkMode": "awsvpc",
-  "cpu": "1024",
-  "memory": "2048"
+  "cpu": "512",
+  "memory": "1024"
 }
