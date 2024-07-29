@@ -2,7 +2,7 @@
   "family": "ogata-dummy-task-family",
   "containerDefinitions": [
     {
-      "name": "ogata-container",
+      "name": "ogata-dummy-container",
       "image": "${IMAGE_URI}",
       "cpu": 1024,
       "memory": 2048,
