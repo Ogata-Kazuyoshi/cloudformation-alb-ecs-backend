@@ -3,9 +3,9 @@
   "containerDefinitions": [
     {
       "name": "ogata-dummy-container",
-      "image": "${IMAGE_URI}",
-      "cpu": 512,
-      "memory": 1024,
+      "image": "398649269234.dkr.ecr.ap-northeast-1.amazonaws.com/ogata-cloudformation-template:latest",
+      "cpu": 1024,
+      "memory": 2048,
       "portMappings": [
         {
           "containerPort": 8080,
@@ -16,16 +16,16 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "${LOG_GROUP}",
+          "awslogs-group": "/ecs/ogata-dummy-container",
           "awslogs-region": "ap-northeast-1",
           "awslogs-stream-prefix": "ecs"
         }
       }
     }
   ],
-  "executionRoleArn": "${EXECUTION_ROLE_ARN}",
+  "executionRoleArn": "arn:aws:iam::398649269234:role/ogata-ecs-task-execution-role",
   "requiresCompatibilities": ["FARGATE"],
   "networkMode": "awsvpc",
-  "cpu": "512",
-  "memory": "1024"
+  "cpu": "1024",
+  "memory": "2048"
 }
