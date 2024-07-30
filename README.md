@@ -1,4 +1,4 @@
-# AWS-cloudFormation-codepipeline
+# AWS-cloudFormation
 
 <details open="open">
 <summary>目次</summary>
@@ -6,7 +6,7 @@
 
 - [今回のシステム概要図](#今回のシステム概要図)
 - [直接codecommit](#直接codecommit)
-- [githubのPushをトリガーにOIDC認証するしてcodecommitへPushする](#githubのPushをトリガーにOIDC認証するしてcodecommitへPushする)
+- [githubのPushをトリガーにOIDC認証してcodecommitへPushする](#githubのPushをトリガーにOIDC認証してcodecommitへPushする)
 - [githubのPushをトリガーにOIDC認証してTask定義＆サービス更新実施](#githubのPushをトリガーにOIDC認証してTask定義＆サービス更新実施)
 - [使用方法(cloudformation+ecrに直接push)](#使用方法(cloudformation+ecrに直接push))
 - [使用方法(cloudformation起動＆githubActions)](#使用方法(cloudformation起動＆githubActions))
@@ -39,6 +39,7 @@
 - ALB/ECSのセキュリティーグループ
 
 ![](./assets/images/aws-architecher.png)
+![](./assets/images/aws-architecher2.png)
 
 </details>
 
@@ -64,7 +65,7 @@ git config credential.UseHttpPath true
 
 </details>
 
-# githubのPushをトリガーにOIDC認証するしてcodecommitへPushする
+# githubのPushをトリガーにOIDC認証してcodecommitへPushする
 
 <details>
 <summary> 1. IAMでIDプロバイダーを登録</summary>
@@ -275,6 +276,7 @@ make build-image-push
 
 - awsのアクセスキーなどを一旦環境変数で定義
 - 他の環境変数も定義
+- 初回はECRにコンテナイメージが入っていないので、DummyとしてNGINXを8080ポートで起動するtaskDefinitionを作成
 - 下記コマンドでインフラ起動
 
 ```zh
@@ -283,6 +285,25 @@ make iac-deploy
 
 </details>
 
+
+<details>
+<summary> 2. githubActionsを通して、AWSへデプロイ</summary>
+
+### githubActionsに下記の環境変数を入れる
+
+- AWS_ROLE_ARN
+- AWS_REGION
+- AWS_ECR_REPOSITORY
+- AWS_EXISTING_ECS_TASK_ROLE_ARN
+- AWS_ECR_DOMAIN
+
+### はまったポイント
+
+- deployの方でも、taskDefinitionをみにいきたいので、actions/checkoutが必要
+- 既存のtaskDefinitionを上書きする
+- 普通にgithubのmainブランチにPushするとあとは走る
+
+</details>
 
 # 備考
 
