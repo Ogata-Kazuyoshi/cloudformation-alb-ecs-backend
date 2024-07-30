@@ -6,8 +6,10 @@
 
 - [今回のシステム概要図](#今回のシステム概要図)
 - [直接codecommit](#直接codecommit)
-- [githubのPushをトリガーにOIDC認証する](#githubのPushをトリガーにOIDC認証する)
+- [githubのPushをトリガーにOIDC認証するしてcodecommitへPushする](#githubのPushをトリガーにOIDC認証するしてcodecommitへPushする)
+- [githubのPushをトリガーにOIDC認証してTask定義＆サービス更新実施](#githubのPushをトリガーにOIDC認証してTask定義＆サービス更新実施)
 - [使用方法(cloudformation+ecrに直接push)](#使用方法(cloudformation+ecrに直接push))
+- [使用方法(cloudformation起動＆githubActions)](#使用方法(cloudformation起動＆githubActions))
 - [備考](#備考)
 - [参考](#参考)
 </details>
@@ -33,6 +35,7 @@
 - ECSサービス
 - ECS task (ECRのイメージを使用)
 - IAMロール（ECSのtask定義で使用）
+- ECRのリポジトリ
 - ALB/ECSのセキュリティーグループ
 
 ![](./assets/images/aws-architecher.png)
@@ -61,7 +64,7 @@ git config credential.UseHttpPath true
 
 </details>
 
-# githubのPushをトリガーにOIDC認証する
+# githubのPushをトリガーにOIDC認証するしてcodecommitへPushする
 
 <details>
 <summary> 1. IAMでIDプロバイダーを登録</summary>
@@ -178,6 +181,24 @@ jobs:
 
 </details>
 
+# githubのPushをトリガーにOIDC認証してTask定義＆サービス更新実施
+
+<details>
+<summary> 1. task定義ファイルをおく</summary>
+
+- 後で、githubActionsから | jq　を用いて既存ファイルの一部を上書きに行く（今回別にいらないかも）
+
+</details>
+
+<details>
+<summary> 2. github-ci.ymlを定義</summary>
+
+- まずは、buid-imageしてECRへPush
+- その次にdeploy工程。現存のtaskDefinitionを一時的に上書きして、サービスを更新。念のためにログで見れるようにecho , catコマンド使用
+- github認証認可後のIAMロールには、ECR & ECSへのアクセス権限が付与されていること
+
+</details>
+
 
 # 使用方法(cloudformation+ecrに直接push)
 
@@ -246,6 +267,22 @@ make build-image-push
 - 上記はデプロイされたりされなかったりで不安定だった。少し余裕持っても良いかも
 
 </details>
+
+# 使用方法(cloudformation起動＆githubActions)
+
+<details>
+<summary> 1. cloudFormationでインフラを起動</summary>
+
+- awsのアクセスキーなどを一旦環境変数で定義
+- 他の環境変数も定義
+- 下記コマンドでインフラ起動
+
+```zh
+make iac-deploy
+```
+
+</details>
+
 
 # 備考
 

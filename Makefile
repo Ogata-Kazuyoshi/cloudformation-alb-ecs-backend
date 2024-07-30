@@ -18,21 +18,6 @@ build-image-push:
 	docker push $(ECR_ENDPOINT)/$(ECR_REPOSITORY_NAME):latest
 	make register-task-definition
 
-define retry
-    n=0
-    until [ $$n -ge $(1) ]
-    do
-        $$2 && break
-        n=$$((n+1))
-        echo "Retry $$n/$(1)..."
-        sleep 5
-    done
-    if [ $$n -ge $(1) ]; then
-        echo "Failed after $(1) attempts."
-        exit 1
-    fi
-endef
-
 register-task-definition:
 	REVISION=$$(aws ecs register-task-definition \
 		--family $(TASK_DEFINITION_FAMILY) \
@@ -76,6 +61,7 @@ iac-deploy:
 	             ParameterKey=VpcId,ParameterValue=$(VPC_ID) \
 	             ParameterKey=ExistingECSTaskRoleArn,ParameterValue=$(EXISTING_ECS_TASK_ROLE_ARN) \
 	             ParameterKey=ECRImage,ParameterValue=$(ECR_IMAGE) \
+	             ParameterKey=ECRRepositoryName,ParameterValue=$(ECR_REPOSITORY_NAME) \
 	             ParameterKey=HostedZoneId,ParameterValue=$(HOSTED_ZONE_ID) \
 	             ParameterKey=DomainName,ParameterValue=$(DOMAIN_NAME) \
 	             ParameterKey=ACMCertificateArn,ParameterValue=$(ACM_CERTIFICATE_ARN)
@@ -91,6 +77,7 @@ iac-update:
 	             ParameterKey=VpcId,ParameterValue=$(VPC_ID) \
 	             ParameterKey=ExistingECSTaskRoleArn,ParameterValue=$(EXISTING_ECS_TASK_ROLE_ARN) \
 	             ParameterKey=ECRImage,ParameterValue=$(ECR_IMAGE) \
+	             ParameterKey=ECRRepositoryName,ParameterValue=$(ECR_REPOSITORY_NAME) \
 	             ParameterKey=HostedZoneId,ParameterValue=$(HOSTED_ZONE_ID) \
 	             ParameterKey=DomainName,ParameterValue=$(DOMAIN_NAME) \
 	             ParameterKey=ACMCertificateArn,ParameterValue=$(ACM_CERTIFICATE_ARN)
