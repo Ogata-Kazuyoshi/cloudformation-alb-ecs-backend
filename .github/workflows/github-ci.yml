@@ -113,11 +113,11 @@ jobs:
         run: |
           aws ecs update-service --cluster $CLUSTER_NAME --service $SERVICE_NAME --task-definition ${{ steps.task-def.outputs.NEW_TASK_DEF_ARN }} --force-new-deployment --region ${{ vars.AWS_REGION }} --desired-count 1
 
-      # - name: Wait for ECS service stability
-      #   env:
-      #     CLUSTER_NAME: ogata-cloudformation-cluster
-      #     SERVICE_NAME: ogata-cloudformation-service
-      #   run: |
-      #     echo "Waiting for ECS service to stabilize..."
-      #     aws ecs wait services-stable --cluster $CLUSTER_NAME --services $SERVICE_NAME --region ${{ vars.AWS_REGION }}
-      #     echo "ECS service is stable."
+      - name: Wait for ECS service stability
+        env:
+         CLUSTER_NAME: ogata-cloudformation-cluster
+         SERVICE_NAME: ogata-cloudformation-service
+        run: |
+         echo "Waiting for ECS service to stabilize..."
+         aws ecs wait services-stable --cluster $CLUSTER_NAME --services $SERVICE_NAME --region ${{ vars.AWS_REGION }}
+         echo "ECS service is stable."

@@ -29,6 +29,7 @@ function App() {
       <div>色々環境変数化してみた</div>
       <div>taskが２回立ち上がってたのを回避した</div>
       <div>多分１回になったかな？</div>
+      <div>github-ymlにwaitを入れてみた</div>
       <br />
       <br />
       <div>コードはBuildされたものをECRへPushしてます</div>
