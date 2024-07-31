@@ -40,6 +40,7 @@
 
 ![](./assets/images/aws-architecher.png)
 ![](./assets/images/aws-architecher2.png)
+![](./assets/images/aws-architecher3.png)
 
 </details>
 

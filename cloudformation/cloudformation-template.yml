@@ -120,7 +120,7 @@ Resources:
               - Effect: Allow
                 Action:
                   - secretsmanager:GetSecretValue
-                Resource: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${MasterUserPassword}
+                Resource: !Ref MasterUserPassword
 
   ECSTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -273,3 +273,8 @@ Resources:
         GenerateStringKey: 'password'
         PasswordLength: 16
         ExcludeCharacters: '"@/\\'
+Outputs:
+  MasterUserPasswordArn:
+    Value: !Ref MasterUserPassword
+    Export:
+      Name: MasterUserPasswordArn
