@@ -200,6 +200,19 @@ jobs:
 
 </details>
 
+<details>
+<summary> 3. シークレットマネージャーで下記が必要（DB使用のため）</summary>
+
+- username : cloudformationで自動で作成
+- password : cloudformationで自動で作成
+- POSTGRES_URL : 手動で入力必要
+- sandbox : 手動で入力必要
+
+
+- 上記に伴って、taskdefinitionの部分でシークレットを読めるようにすること！
+- ECSのtaskロールは、cloudformationで起動時に、DB用に作成したsecretsManagerはアクセスを許可するポリシーを入れている
+
+</details>
 
 # 使用方法(cloudformation+ecrに直接push)
 
