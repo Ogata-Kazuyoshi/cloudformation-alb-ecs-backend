@@ -36,7 +36,9 @@
 - ECS task (ECRのイメージを使用)
 - IAMロール（ECSのtask定義で使用）
 - ECRのリポジトリ
-- ALB/ECSのセキュリティーグループ
+- ALB/ECS/RDSのセキュリティーグループ
+- RDS(postgresql)
+- SecretsManager(RDSの認証管理、SpringBootのyml切り替え)
 
 ![](./assets/images/aws-architecher.png)
 ![](./assets/images/aws-architecher2.png)
@@ -207,11 +209,11 @@ jobs:
 - username : cloudformationで自動で作成
 - password : cloudformationで自動で作成
 - POSTGRES_URL : 手動で入力必要
-- sandbox : 手動で入力必要
+- sandbox : 手動で入力必要 (今回の場合は、sandbox)
 
 
 - 上記に伴って、taskdefinitionの部分でシークレットを読めるようにすること！
-- ECSのtaskロールは、cloudformationで起動時に、DB用に作成したsecretsManagerはアクセスを許可するポリシーを入れている
+- ECSのtaskロールは、cloudformationで起動時に、DB用に作成したsecretsManagerはアクセスを許可するポリシーを入れている。OutputsでSecretsManagerのARNを動的に取得
 
 </details>
 
