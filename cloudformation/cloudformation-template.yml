@@ -112,6 +112,15 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Policies:
+        - PolicyName: SecretsManagerAccessPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Sub arn:aws:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:${MasterUserPassword}
 
   ECSTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
@@ -136,7 +145,12 @@ Resources:
               awslogs-group: !Ref LogGroup
               awslogs-region: !Ref 'AWS::Region'
               awslogs-stream-prefix: ecs
-          Command: [ "/bin/sh", "-c", "echo \"$NGINX_CONF\" > /etc/nginx/nginx.conf && nginx -g 'daemon off;'" ]
+          Command:
+            [
+              '/bin/sh',
+              '-c',
+              'echo "$NGINX_CONF" > /etc/nginx/nginx.conf && nginx -g ''daemon off;''',
+            ]
           Environment:
             - Name: NGINX_CONF
               Value: |
@@ -150,7 +164,6 @@ Resources:
                         }
                     }
                 }
-  
 
   ECSService:
     Type: 'AWS::ECS::Service'
@@ -191,22 +204,72 @@ Resources:
     Type: 'AWS::ECR::Repository'
     Properties:
       RepositoryName: !Ref ECRRepositoryName
-#      LifecyclePolicy:
-#        LifecyclePolicyText: |
-#          {
-#            "rules": [
-#              {
-#                "rulePriority": 1,
-#                "description": "Expire untagged images older than 30 days",
-#                "selection": {
-#                  "tagStatus": "untagged",
-#                  "countType": "sinceImagePushed",
-#                  "countUnit": "days",
-#                  "countNumber": 30
-#                },
-#                "action": {
-#                  "type": "expire"
-#                }
-#              }
-#            ]
-#          }
+  #      LifecyclePolicy:
+  #        LifecyclePolicyText: |
+  #          {
+  #            "rules": [
+  #              {
+  #                "rulePriority": 1,
+  #                "description": "Expire untagged images older than 30 days",
+  #                "selection": {
+  #                  "tagStatus": "untagged",
+  #                  "countType": "sinceImagePushed",
+  #                  "countUnit": "days",
+  #                  "countNumber": 30
+  #                },
+  #                "action": {
+  #                  "type": "expire"
+  #                }
+  #              }
+  #            ]
+  #          }
+
+  RDSDBInstance:
+    Type: 'AWS::RDS::DBInstance'
+    Properties:
+      DBInstanceClass: db.t3.micro
+      Engine: postgres
+      EngineVersion: '15.4'
+      DBInstanceIdentifier: ogata-cloudformation-instance
+      MasterUsername: !Sub '{{resolve:secretsmanager:ogata-cloudformation-master-credentials:SecretString:username}}'
+      MasterUserPassword: !Sub '{{resolve:secretsmanager:ogata-cloudformation-master-credentials:SecretString:password}}'
+      AllocatedStorage: 20 # ストレージサイズを20GiBに設定
+      StorageType: gp2 # ストレージタイプをgp2に設定
+      VPCSecurityGroups:
+        - !Ref RDSSecurityGroup
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      PubliclyAccessible: false
+      BackupRetentionPeriod: 7
+      PreferredBackupWindow: '07:00-09:00'
+      PreferredMaintenanceWindow: 'Mon:00:00-Mon:03:00'
+      DBName: cloudformation # データベース名を追加
+
+  RDSSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'Allow traffic from ECS Security Group'
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5432
+          ToPort: 5432
+          SourceSecurityGroupId: !Ref ECSSecurityGroup
+
+  DBSubnetGroup:
+    Type: 'AWS::RDS::DBSubnetGroup'
+    Properties:
+      DBSubnetGroupDescription: 'Subnet group for RDS DB Instance'
+      DBSubnetGroupName: 'ogata-rds-subnet-group' # 名前を追加
+      SubnetIds:
+        - !Ref SubnetPrivateId1
+        - !Ref SubnetPrivateId2
+
+  MasterUserPassword:
+    Type: 'AWS::SecretsManager::Secret'
+    Properties:
+      Name: ogata-cloudformation-master-credentials
+      GenerateSecretString:
+        SecretStringTemplate: '{"username":"ogatacloud"}'
+        GenerateStringKey: 'password'
+        PasswordLength: 16
+        ExcludeCharacters: '"@/\\'

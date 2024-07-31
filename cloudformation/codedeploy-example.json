@@ -1,0 +1,193 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The template used to create an ECS Service from the ECS Console.",
+  "Parameters": {
+    "ECSClusterName": {
+      "Type": "String",
+      "Default": "okazukka"
+    },
+    "ECSServiceName": {
+      "Type": "String",
+      "Default": "okazukka-service"
+    },
+    "SecurityGroupIDs": {
+      "Type": "CommaDelimitedList",
+      "Default": "sg-0e39f0922c3f02d1f"
+    },
+    "SubnetIDs": {
+      "Type": "CommaDelimitedList",
+      "Default": "subnet-0d3cad29954fabc49,subnet-0378dcd64fef2492f"
+    },
+    "VpcID": {
+      "Type": "String",
+      "Default": "vpc-069ba3c8afff04460"
+    },
+    "LoadBalancerName": {
+      "Type": "String",
+      "Default": "okazukka-alb"
+    },
+    "ApplicationName": {
+      "Type": "String",
+      "Default": "AppECS-okazukka-okazukka-service"
+    },
+    "DeploymentGroupName": {
+      "Type": "String",
+      "Default": "DgpECS-okazukka-okazukka-service"
+    }
+  },
+  "Resources": {
+    "ECSService": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": "okazukka",
+        "TaskDefinition": "arn:aws:ecs:ap-northeast-1:398649269234:task-definition/okazukka-task:1",
+        "LaunchType": "FARGATE",
+        "ServiceName": "okazukka-service",
+        "SchedulingStrategy": "REPLICA",
+        "DesiredCount": 1,
+        "LoadBalancers": [
+          {
+            "ContainerName": "okazukka-container",
+            "ContainerPort": 8080,
+            "LoadBalancerName": {
+              "Ref": "AWS::NoValue"
+            },
+            "TargetGroupArn": "arn:aws:elasticloadbalancing:ap-northeast-1:398649269234:targetgroup/okazukka-tg1/6fb2db67e52767eb"
+          }
+        ],
+        "HealthCheckGracePeriodSeconds": "5",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "AssignPublicIp": "ENABLED",
+            "SecurityGroups": {
+              "Ref": "SecurityGroupIDs"
+            },
+            "Subnets": {
+              "Ref": "SubnetIDs"
+            }
+          }
+        },
+        "PlatformVersion": "LATEST",
+        "DeploymentController": {
+          "Type": "CODE_DEPLOY"
+        },
+        "ServiceConnectConfiguration": {
+          "Enabled": false
+        },
+        "Tags": [],
+        "EnableECSManagedTags": true
+      }
+    },
+    "CodeDeployDeploymentGroup": {
+      "Type": "AWS::CodeDeploy::DeploymentGroup",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "ApplicationName"
+        },
+        "DeploymentGroupName": {
+          "Ref": "DeploymentGroupName"
+        },
+        "DeploymentConfigName": "CodeDeployDefault.ECSAllAtOnce",
+        "AutoRollbackConfiguration": {
+          "Enabled": true,
+          "Events": [
+            "DEPLOYMENT_FAILURE",
+            "DEPLOYMENT_STOP_ON_REQUEST"
+          ]
+        },
+        "BlueGreenDeploymentConfiguration": {
+          "DeploymentReadyOption": {
+            "ActionOnTimeout": "CONTINUE_DEPLOYMENT",
+            "WaitTimeInMinutes": 0
+          },
+          "TerminateBlueInstancesOnDeploymentSuccess": {
+            "Action": "TERMINATE",
+            "TerminationWaitTimeInMinutes": 60
+          }
+        },
+        "DeploymentStyle": {
+          "DeploymentOption": "WITH_TRAFFIC_CONTROL",
+          "DeploymentType": "BLUE_GREEN"
+        },
+        "LoadBalancerInfo": {
+          "TargetGroupPairInfoList": [
+            {
+              "ProdTrafficRoute": {
+                "ListenerArns": [
+                  "arn:aws:elasticloadbalancing:ap-northeast-1:398649269234:listener/app/okazukka-alb/db354e0907aa8b5e/f5b7c28472fb8b04"
+                ]
+              },
+              "TestTrafficRoute": {
+                "ListenerArns": [
+                  "arn:aws:elasticloadbalancing:ap-northeast-1:398649269234:listener/app/okazukka-alb/db354e0907aa8b5e/650519f672c1dafc"
+                ]
+              },
+              "TargetGroups": [
+                {
+                  "Name": "okazukka-tg1"
+                },
+                {
+                  "Name": "okazukka-tg2"
+                }
+              ]
+            }
+          ]
+        },
+        "ServiceRoleArn": "arn:aws:iam::398649269234:role/ecs-deploy-role",
+        "ECSServices": [
+          {
+            "ClusterName": {
+              "Ref": "ECSClusterName"
+            },
+            "ServiceName": {
+              "Ref": "ECSServiceName"
+            }
+          }
+        ],
+        "Tags": []
+      },
+      "DependsOn": [
+        "CodeDeployApplication"
+      ]
+    },
+    "CodeDeployApplication": {
+      "Type": "AWS::CodeDeploy::Application",
+      "Properties": {
+        "ApplicationName": {
+          "Ref": "ApplicationName"
+        },
+        "ComputePlatform": "ECS",
+        "Tags": []
+      },
+      "DependsOn": [
+        "ECSService"
+      ]
+    }
+  },
+  "Outputs": {
+    "ClusterName": {
+      "Description": "The cluster used to create the service.",
+      "Value": {
+        "Ref": "ECSClusterName"
+      }
+    },
+    "ECSService": {
+      "Description": "The created service.",
+      "Value": {
+        "Ref": "ECSService"
+      }
+    },
+    "CodeDeployDeploymentGroup": {
+      "Description": "The created CodeDeploy deployment group.",
+      "Value": {
+        "Ref": "CodeDeployDeploymentGroup"
+      }
+    },
+    "CodeDeployApplication": {
+      "Description": "The created CodeDeploy application.",
+      "Value": {
+        "Ref": "CodeDeployApplication"
+      }
+    }
+  }
+}

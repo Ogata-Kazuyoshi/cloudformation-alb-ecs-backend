@@ -18,7 +18,21 @@
           "awslogs-region": "ap-northeast-1",
           "awslogs-stream-prefix": "ecs"
         }
-      }
+      },
+      "secrets": [
+        {
+          "name": "POSTGRES_USERNAME",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-1:398649269234:secret:ogata-cloudformation-master-credentials-p6Q3TC:username::"
+        },
+        {
+          "name": "POSTGRES_PASSWORD",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-1:398649269234:secret:ogata-cloudformation-master-credentials-p6Q3TC:password::"
+        },
+        {
+          "name": "POSTGRES_URL",
+          "valueFrom": "arn:aws:secretsmanager:ap-northeast-1:398649269234:secret:ogata-cloudformation-master-credentials-p6Q3TC:POSTGRES_URL::"
+        }
+      ]
     }
   ],
   "executionRoleArn": "arn:aws:iam::398649269234:role/ogata-ecs-task-execution-role",

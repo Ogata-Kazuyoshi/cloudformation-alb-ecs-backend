@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5437/cloudformation
+    username: admin
+    password: admin
+  jpa:
+    generate-ddl: true
+    show-sql: true
+#
+#  flyway:
+#    baseline-version: 0
+#    enabled: true
+#    baseline-on-migrate: true
+
