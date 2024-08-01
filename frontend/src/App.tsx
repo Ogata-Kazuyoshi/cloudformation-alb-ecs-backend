@@ -23,6 +23,7 @@ function App() {
       <div>CloudFormationで環境を構築しました</div>
       <br />
         <div>無茶苦茶良い感じ。ちゃんとDB、シークレットも含めて環境をCloudFormationで作成完了</div>
+        <div>ちゃんと更新してるんよねーーーー！！！</div>
       <br />
         <div>
             <button onClick={getUserInfoClick}> Get User Info</button>
